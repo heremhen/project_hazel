@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { fontMono } from "@/lib/fonts";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export const metadata: Metadata = {
   title: "Hazel Haze",
@@ -30,7 +31,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
         </ThemeProvider>
         <Toaster />
         <TailwindIndicator />
