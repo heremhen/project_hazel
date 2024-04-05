@@ -51,7 +51,7 @@ export function SignUpForm() {
         </div>
         <div className="mt-4 text-center text-sm">
           Бүртгэлтэй юу?{" "}
-          <Link href="#" className="underline">
+          <Link href="/login" className="underline">
             Нэвтрэх
           </Link>
         </div>
