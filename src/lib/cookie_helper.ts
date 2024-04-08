@@ -18,7 +18,7 @@ const setToken = async (name: string, token: string): Promise<void> => {
   }
 };
 
-const getToken = (name: string): string | boolean => {
+const getToken = async (name: string): Promise<string | boolean> => {
   const cookie = cookies().get(name);
 
   if (cookie && cookie !== undefined) {
@@ -28,7 +28,7 @@ const getToken = (name: string): string | boolean => {
   return false;
 };
 
-const destroyToken = (name: string): void => {
+const destroyToken = async (name: string): Promise<void> => {
   cookies().delete(name);
 };
 

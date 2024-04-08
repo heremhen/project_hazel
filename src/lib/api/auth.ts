@@ -1,18 +1,22 @@
+"use server";
+
 import axios from "axios";
 import { getToken } from "@/lib/cookie_helper";
 
 interface LoginRequestBody {
-  email: string;
+  login: string;
   password: string;
 }
 
 interface LoginOrRegisterResponseBody {
-  data: { type: string; token: string };
+  status: number;
+  data: { access: string; refresh: string };
 }
 
 interface RegistrationRequestBody {
   username: string;
   email: string;
+  fullname: string;
   password: string;
 }
 
@@ -22,7 +26,7 @@ const authAxios = axios.create({
 
 authAxios.interceptors.request.use(
   function (config: any) {
-    config.headers.Authorization = `Bearer ${getToken("access-token")}`;
+    config.headers.Authorization = `Bearer ${getToken("token")}`;
 
     return config;
   },
@@ -43,13 +47,21 @@ authAxios.interceptors.response.use(
 const login = async (
   data: LoginRequestBody
 ): Promise<LoginOrRegisterResponseBody> => {
-  return await authAxios.post("auth/token", data);
+  const response = await authAxios.post("auth/token", data);
+  return {
+    status: response.status,
+    data: response.data.result,
+  };
 };
 
 const registerUser = async (
   data: RegistrationRequestBody
 ): Promise<LoginOrRegisterResponseBody> => {
-  return await authAxios.post("users", data);
+  const response = await authAxios.post("users", data);
+  return {
+    status: response.status,
+    data: response.data.result,
+  };
 };
 
 export { login, registerUser };

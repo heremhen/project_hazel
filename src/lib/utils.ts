@@ -11,11 +11,19 @@ interface DecodedTokenDto {
   sub?: string;
 }
 
-const getDecodedAccessToken = (token: string): DecodedTokenDto | null => {
+const getDecodedAccessToken = async (
+  token: string
+): Promise<DecodedTokenDto | null> => {
   try {
-    const decodedToken = jose.decodeJwt(token);
+    const decodedToken = await jose.jwtVerify(
+      token,
+      new TextEncoder().encode(`${process.env.JWT_SECRET}`)
+    );
     if (decodedToken) {
-      return decodedToken;
+      return {
+        exp: decodedToken.payload.exp,
+        sub: decodedToken.payload.sub,
+      };
     } else {
       console.error("Decoded token is null.");
       return null;
@@ -26,17 +34,17 @@ const getDecodedAccessToken = (token: string): DecodedTokenDto | null => {
   }
 };
 
-const checkTokenIsExpired = (token: string): boolean => {
+const checkTokenIsExpired = async (token: string): Promise<boolean> => {
   if (!token) {
     return true;
   }
 
-  const decodedToken = getDecodedAccessToken(token);
+  const decodedToken = await getDecodedAccessToken(token);
 
   if (
     decodedToken &&
     decodedToken.exp &&
-    decodedToken.exp > Math.floor(Date.now() / 60000) + 2600
+    decodedToken.exp > Math.floor(Date.now() / 60000) + 10080
   ) {
     return false;
   }

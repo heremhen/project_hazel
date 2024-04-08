@@ -48,24 +48,27 @@ export function LoginForm() {
     const { email, password } = data;
 
     try {
-      const response = await login({
-        email: email,
+      await login({
+        login: email,
         password: password,
+      }).then((response) => {
+        if (response.status === 201) {
+          const { data } = response;
+          setToken("token", data.refresh);
+          toast({
+            description: "Welcome back 🤗",
+          });
+          setIsLoading(false);
+          router.push("/");
+        } else {
+          throw new Error("Failed to login");
+        }
       });
-      const { data } = response;
-      setToken("access-token", data.token);
-
-      toast({
-        description: "Welcome back 🤗",
-      });
-
-      setIsLoading(false);
-      router.refresh();
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Unauthorized",
-        description: "Provided credentials didn't match!",
+        description: `Provided credentials didn't match!`,
         action: <ToastAction altText="Try again">Try again</ToastAction>,
       });
       setIsLoading(false);
@@ -73,7 +76,7 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="mx-auto max-w-sm">
+    <Card className="mx-auto max-w-sm border-foreground/25">
       <CardHeader>
         <CardTitle className="text-2xl">Нэвтрэх</CardTitle>
         {/* <CardDescription>
@@ -82,7 +85,10 @@ export function LoginForm() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(loginSubmit)} className="space-y-3">
+          <form
+            onSubmit={form.handleSubmit(loginSubmit)}
+            className="grid gap-4"
+          >
             <FormField
               control={form.control}
               name="email"
@@ -143,7 +149,14 @@ export function LoginForm() {
         </Form>
         <div className="mt-4 text-center text-sm">
           Бүртгэлгүй юу?{" "}
-          <Link href="/register" className="underline">
+          <Link
+            href="/register"
+            className="underline"
+            onClick={(e) => {
+              e.preventDefault();
+              router.push("/register");
+            }}
+          >
             Шинээр нээх
           </Link>
         </div>
