@@ -35,7 +35,7 @@ export async function middleware(req: NextRequest) {
           pathname === "/login" ||
           pathname === "/register"
         ) {
-          return NextResponse.rewrite(new URL("/dashboard", req.url));
+          return NextResponse.rewrite(new URL("/", req.url));
         }
         return NextResponse.next();
       }

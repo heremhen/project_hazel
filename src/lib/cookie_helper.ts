@@ -1,7 +1,12 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { getDecodedAccessToken } from "@/lib/utils";
+import * as jose from "jose";
+
+interface DecodedTokenDto {
+  exp?: number;
+  sub?: string;
+}
 
 const setToken = async (name: string, token: string): Promise<void> => {
   const data = await getDecodedAccessToken(token);
@@ -19,7 +24,8 @@ const setToken = async (name: string, token: string): Promise<void> => {
 };
 
 const getToken = async (name: string): Promise<string | boolean> => {
-  const cookie = cookies().get(name);
+  const cookieStore = cookies();
+  const cookie = cookieStore.get("token")?.value;
 
   if (cookie && cookie !== undefined) {
     return cookie.toString();
@@ -32,13 +38,51 @@ const destroyToken = async (name: string): Promise<void> => {
   cookies().delete(name);
 };
 
-async function isAuthenticated() {
-  const token = cookies().get("authorization")?.value;
-  if (!token) {
+const getDecodedAccessToken = async (
+  token: string
+): Promise<DecodedTokenDto | undefined> => {
+  try {
+    const decodedToken = await jose.jwtVerify(
+      token,
+      new TextEncoder().encode(`${process.env.JWT_SECRET}`)
+    );
+    if (decodedToken) {
+      return {
+        exp: decodedToken.payload.exp,
+        sub: decodedToken.payload.sub,
+      };
+    } else {
+      console.error("Decoded token is null.");
+      return undefined;
+    }
+  } catch (error) {
+    console.error("Error decoding token:", error);
     return undefined;
   }
-  const result = await getDecodedAccessToken(token);
-  return result !== undefined;
-}
+};
 
-export { setToken, getToken, destroyToken, isAuthenticated };
+const checkTokenIsExpired = async (token: string): Promise<boolean> => {
+  if (!token) {
+    return true;
+  }
+
+  const decodedToken = await getDecodedAccessToken(token);
+
+  if (
+    decodedToken &&
+    decodedToken.exp &&
+    decodedToken.exp > Math.floor(Date.now() / 60000) + 10080
+  ) {
+    return false;
+  }
+
+  return true;
+};
+
+export {
+  setToken,
+  getToken,
+  destroyToken,
+  checkTokenIsExpired,
+  getDecodedAccessToken,
+};

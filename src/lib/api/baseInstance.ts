@@ -1,6 +1,11 @@
-import { checkTokenIsExpired } from "@/lib/utils";
+"use server";
+
 import axios from "axios";
-import { cookies } from "next/headers";
+import {
+  getToken,
+  destroyToken,
+  checkTokenIsExpired,
+} from "@/lib/cookie_helper";
 
 const axiosInstance = axios.create({
   baseURL: process.env.BACKEND_URL,
@@ -8,18 +13,16 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   async function (config: any) {
-    const cookieStore = cookies();
-    const token = cookieStore.get("token");
-
+    const token = await getToken("authorization");
     if (
       token &&
-      (await checkTokenIsExpired(<string>(<unknown>token))) === false
+      typeof token === "string" &&
+      (await checkTokenIsExpired(token)) === false
     ) {
       config.headers.Authorization = `Bearer ${token}`;
     } else {
-      cookieStore.delete("token");
+      await destroyToken("token");
     }
-
     return config;
   },
   function (error: any) {
@@ -32,7 +35,7 @@ const callGet = async (url: string) => {
 };
 
 const callPost = async (url: string, body: object) => {
-  return await axiosInstance.post(url, body);
+  return await axiosInstance.post(url, body)
 };
 
 const callPostWithoutBody = async (url: string) => {

@@ -1,3 +1,5 @@
+"use server";
+
 import {
   callGet,
   callPost,
@@ -8,11 +10,19 @@ import {
 } from "./baseInstance";
 
 async function getAllHorizon() {
-  return await callGet("/horizon");
+  const response = await callGet("/horizon");
+  return {
+    status: response.status,
+    data: response.data.result,
+  };
 }
 
 async function createHorizon(data: object) {
-  return await callPost("/horizon", data);
+  const resp = await callPost("/horizon", data);
+  return {
+    status: resp.status,
+    data: resp.data.result,
+  };
 }
 
 export { getAllHorizon, createHorizon };

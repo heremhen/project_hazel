@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Home, LineChart, Package, ShoppingCart, Users2 } from "lucide-react";
+import { LineChart, Package, Cloudy, LayoutDashboard } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -7,11 +7,10 @@ import {
 } from "@/components/ui/tooltip";
 
 const menuItems = [
-  { name: "Dashboard", href: "/dashboard", icon: Home },
-  { name: "Orders", href: "#", icon: ShoppingCart },
-  { name: "Products", href: "#", icon: Package },
-  { name: "Customers", href: "#", icon: Users2 },
-  { name: "Analytics", href: "#", icon: LineChart },
+  { name: "Хяналтын самбар", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Горизон", href: "/horizon", icon: Package },
+  { name: "Файлууд", href: "/files", icon: Cloudy },
+  { name: "Аналитик", href: "/report", icon: LineChart },
 ];
 
 const NavMenu = ({
@@ -39,7 +38,15 @@ const NavMenu = ({
               <TooltipContent side="right">{item.name}</TooltipContent>
             </Tooltip>
           )}
-          {showText && <span>{item.name}</span>}
+          {showText && (
+            <Link
+              href={item.href}
+              className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+            >
+              <item.icon className="h-5 w-5" />
+              <span>{item.name}</span>
+            </Link>
+          )}
         </div>
       ))}
     </>

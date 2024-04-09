@@ -19,9 +19,9 @@ export function MyCorner() {
           className="overflow-hidden rounded-full"
         >
           <Image
-            src="/placeholder-user.jpg"
-            width={36}
-            height={36}
+            src="/lumi.png"
+            width={50}
+            height={50}
             alt="Avatar"
             className="overflow-hidden"
           />

@@ -1,22 +1,34 @@
-import {
-  callGet,
-  callPost,
-  callPostByFormData,
-  callPostWithoutBody,
-  callPut,
-  callDelete,
-} from "./baseInstance";
+"use server";
 
-async function getAllModels() {
-  return await callGet("/models");
+import { callGet, callPost } from "./baseInstance";
+
+interface IResponse {
+  status: number;
+  data: any;
 }
 
-async function getModel(id: string) {
-  return await callGet(`/models/${id}`);
+async function getAllModels(): Promise<IResponse> {
+  const resp = await callGet("/models");
+  return {
+    status: resp.status,
+    data: resp.data.result,
+  };
 }
 
-async function createAutoMLModel(data: object) {
-  return await callPost("/models", data);
+async function getModel(id: string): Promise<IResponse> {
+  const resp = await callGet(`/models/${id}`);
+  return {
+    status: resp.status,
+    data: resp.data.result,
+  };
+}
+
+async function createAutoMLModel(data: object): Promise<IResponse> {
+  const resp = await callPost("/models", data);
+  return {
+    status: resp.status,
+    data: resp.data.result,
+  };
 }
 
 export { getAllModels, getModel, createAutoMLModel };

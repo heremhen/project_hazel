@@ -2,9 +2,7 @@ import { PanelLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { CommandDialogMenu } from "@/components/command-menu";
-import { isAuthenticated } from "@/lib/cookie_helper";
-import { redirect } from "next/navigation";
-import { MyCorner } from "@/components/my-corder";
+import { MyCorner } from "@/components/my-corner";
 import { Breadcrumbed } from "@/components/bread-crumb";
 import SideMenu from "@/components/side-menu";
 import NavMenu from "@/components/nav-menu";
@@ -12,10 +10,6 @@ import NavMenu from "@/components/nav-menu";
 export default Layout;
 
 async function Layout({ children }: { children: React.ReactNode }) {
-  if (await isAuthenticated()) {
-    redirect("/");
-  }
-
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <SideMenu />
