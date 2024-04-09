@@ -9,6 +9,14 @@ import {
   callDelete,
 } from "./baseInstance";
 
+async function getHorizon(id: number) {
+  const response = await callGet(`/horizon/${id}`);
+  return {
+    status: response.status,
+    data: response.data.result,
+  };
+}
+
 async function getAllHorizon() {
   const response = await callGet("/horizon");
   return {
@@ -25,4 +33,4 @@ async function createHorizon(data: object) {
   };
 }
 
-export { getAllHorizon, createHorizon };
+export { getAllHorizon, createHorizon, getHorizon };

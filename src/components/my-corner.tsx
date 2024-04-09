@@ -1,3 +1,5 @@
+"use client";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,8 +10,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { logout } from "@/lib/cookie_helper";
+import { useRouter } from "next/navigation";
 
 export function MyCorner() {
+  const router = useRouter();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -33,7 +38,13 @@ export function MyCorner() {
         <DropdownMenuItem>Тохиргоо</DropdownMenuItem>
         <DropdownMenuItem>Тусламж</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-destructive">
+        <DropdownMenuItem
+          className="text-destructive"
+          onClick={() => {
+            logout();
+            router.refresh();
+          }}
+        >
           Системээс гарах
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -92,20 +92,40 @@ export default function Horizon() {
         <div className="flex items-center">
           <h1 className="text-lg font-semibold md:text-2xl">Хэтийн хүрээ</h1>
         </div>
-        {horizons ? (
-          <BentoGrid className="mx-auto flex flex-wrap gap-5">
-            {horizons.map((item, i) => (
-              <Link key={item.id} href={`/horizon/${item.id}`}>
-                <BentoGridItem
-                  key={item.id}
-                  title={item.name}
-                  header={<SkeletonHeader />}
-                  className={"w-40"}
-                  icon={<Orbit className="h-4 w-4" />}
-                />
-              </Link>
-            ))}
-          </BentoGrid>
+        {horizons && horizons.length ? (
+          <>
+            <div className="flex flex-1 items-center justify-center rounded-lg border-2 border-dashed shadow-sm bg-foreground/5">
+              <div className="grid py-6">
+                <Button
+                  disabled={isLoading}
+                  variant={"default"}
+                  className="transition duration-200 ease-in-out active:scale-95 mb-5 gap-1 w-fit mx-auto"
+                  onClick={() => {
+                    createNewHorizon();
+                  }}
+                >
+                  {isLoading && (
+                    <LucideLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  <Orbit className="h-4 w-4" />
+                  <span>Горизон үүсгэх+</span>
+                </Button>
+                <BentoGrid className="mx-auto flex flex-wrap gap-5">
+                  {horizons.map((item, i) => (
+                    <Link key={item.id} href={`/horizon/${item.id}`}>
+                      <BentoGridItem
+                        key={item.id}
+                        title={item.name}
+                        header={<SkeletonHeader />}
+                        className={"w-40"}
+                        icon={<Orbit className="h-4 w-4" />}
+                      />
+                    </Link>
+                  ))}
+                </BentoGrid>
+              </div>
+            </div>
+          </>
         ) : (
           <div className="flex flex-1 items-center justify-center rounded-lg border-2 border-dashed shadow-sm bg-foreground/5">
             <div className="flex flex-col items-center gap-1 text-center">

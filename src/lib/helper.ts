@@ -37,28 +37,6 @@ export async function getJwt() {
   }
   return null;
 }
-
-export async function logout() {
-  const cookieStore = cookies();
-  const token = cookieStore.get("token");
-
-  if (token) {
-    try {
-      cookieStore.delete("token");
-    } catch (_) {}
-  }
-
-  const userData = cookieStore.get("userData");
-  if (userData) {
-    try {
-      cookieStore.delete("userData");
-      return true;
-    } catch (_) {}
-  }
-
-  return null;
-}
-
 export function setUserDataCookie(userData: any) {
   const cookieStore = cookies();
 
