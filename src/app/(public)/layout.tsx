@@ -1,11 +1,12 @@
+import { isAuthenticated } from "@/lib/cookie_helper";
 import { redirect } from "next/navigation";
 
 export default Layout;
 
 async function Layout({ children }: { children: React.ReactNode }) {
-  // if (await auth.isAuthenticated()) {
-  //   redirect("/");
-  // }
+  if (await isAuthenticated()) {
+    redirect("/");
+  }
 
   return (
     <div className="h-screen w-full bg-background dark:bg-grid-small-white/[0.2] bg-grid-small-black/[0.2] relative flex items-center justify-center">

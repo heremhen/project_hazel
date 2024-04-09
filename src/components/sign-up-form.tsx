@@ -21,13 +21,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import React from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { ToastAction } from "@/components/ui/toast";
 import { registerUser as register } from "@/lib/api/auth";
-import { setToken } from "@/lib/cookie_helper";
 import { LucideLoader2 } from "lucide-react";
 
 const formSchema = z
@@ -64,24 +62,22 @@ export function SignUpForm() {
     const { firstname, lastname, username, email, password } = data;
 
     try {
-      const response = await register({
+      await register({
         username: username,
-        fullname: `${firstname} ${lastname}`,
+        full_name: `${firstname} ${lastname}`,
         email: email,
         password: password,
+      }).then((response) => {
+        if (response.status === 201) {
+          toast({
+            description: "Successfully created an account. Please wait...",
+          });
+          setIsLoading(false);
+          router.push("/");
+        } else {
+          throw new Error("Failed to register");
+        }
       });
-      const { data } = response;
-
-      setToken("token", data.refresh);
-      window.localStorage.setItem("username", username);
-      window.localStorage.setItem("email", email);
-
-      toast({
-        description: "Successfully created an account. Please wait...",
-      });
-
-      setIsLoading(false);
-      router.push("/home");
     } catch (error) {
       toast({
         variant: "destructive",
@@ -90,7 +86,6 @@ export function SignUpForm() {
           "It's either user with the following username, email exist or password didn't meet the requirements!",
         action: <ToastAction altText="Try again">Try again</ToastAction>,
       });
-
       setIsLoading(false);
     }
   }
@@ -115,9 +110,7 @@ export function SignUpForm() {
                 name="lastname"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      Овог<span className="text-destructive">*</span>
-                    </FormLabel>
+                    <FormLabel>Овог</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Эцэг/эхийн нэр"
@@ -134,9 +127,7 @@ export function SignUpForm() {
                 name="firstname"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      Нэр<span className="text-destructive">*</span>
-                    </FormLabel>
+                    <FormLabel>Нэр</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Өөрийн нэр"
@@ -154,9 +145,7 @@ export function SignUpForm() {
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    Хэрэглэгчийн нэр<span className="text-destructive">*</span>
-                  </FormLabel>
+                  <FormLabel>Хэрэглэгчийн нэр</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Цаашид системд хэрэглэгдэх нэр"
@@ -173,9 +162,7 @@ export function SignUpForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    Цахим хаяг<span className="text-destructive">*</span>
-                  </FormLabel>
+                  <FormLabel>Цахим хаяг</FormLabel>
                   <FormControl>
                     <Input
                       type="email"
@@ -193,9 +180,7 @@ export function SignUpForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    Нууц үг<span className="text-destructive">*</span>
-                  </FormLabel>
+                  <FormLabel>Нууц үг</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
@@ -213,9 +198,7 @@ export function SignUpForm() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    Нууц үг давтах<span className="text-destructive">*</span>
-                  </FormLabel>
+                  <FormLabel>Нууц үг давтах</FormLabel>
                   <FormControl>
                     <Input
                       type="password"

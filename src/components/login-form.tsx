@@ -59,7 +59,7 @@ export function LoginForm() {
             description: "Welcome back 🤗",
           });
           setIsLoading(false);
-          router.push("/");
+          router.refresh()
         } else {
           throw new Error("Failed to login");
         }

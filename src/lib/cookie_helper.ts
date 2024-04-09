@@ -32,4 +32,13 @@ const destroyToken = async (name: string): Promise<void> => {
   cookies().delete(name);
 };
 
-export { setToken, getToken, destroyToken };
+async function isAuthenticated() {
+  const token = cookies().get("authorization")?.value;
+  if (!token) {
+    return undefined;
+  }
+  const result = await getDecodedAccessToken(token);
+  return result !== undefined;
+}
+
+export { setToken, getToken, destroyToken, isAuthenticated };

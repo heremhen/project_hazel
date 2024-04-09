@@ -13,7 +13,7 @@ interface DecodedTokenDto {
 
 const getDecodedAccessToken = async (
   token: string
-): Promise<DecodedTokenDto | null> => {
+): Promise<DecodedTokenDto | undefined> => {
   try {
     const decodedToken = await jose.jwtVerify(
       token,
@@ -26,11 +26,11 @@ const getDecodedAccessToken = async (
       };
     } else {
       console.error("Decoded token is null.");
-      return null;
+      return undefined;
     }
   } catch (error) {
     console.error("Error decoding token:", error);
-    return null;
+    return undefined;
   }
 };
 

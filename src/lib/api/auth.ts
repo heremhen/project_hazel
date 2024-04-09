@@ -16,7 +16,7 @@ interface LoginOrRegisterResponseBody {
 interface RegistrationRequestBody {
   username: string;
   email: string;
-  fullname: string;
+  full_name: string;
   password: string;
 }
 
