@@ -95,7 +95,7 @@ export default function Horizon() {
         {horizons && horizons.length ? (
           <>
             <div className="flex flex-1 items-center justify-center rounded-lg border-2 border-dashed shadow-sm bg-foreground/5">
-              <div className="grid py-6">
+              <div className="grid py-6 gap-5">
                 <Button
                   disabled={isLoading}
                   variant={"default"}
@@ -110,7 +110,7 @@ export default function Horizon() {
                   <Orbit className="h-4 w-4" />
                   <span>Горизон үүсгэх+</span>
                 </Button>
-                <BentoGrid className="mx-auto flex flex-wrap gap-5">
+                <BentoGrid className="mx-auto flex flex-wrap gap-5 justify-center">
                   {horizons.map((item, i) => (
                     <Link key={item.id} href={`/horizon/${item.id}`}>
                       <BentoGridItem

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, PlusCircle, Upload } from "lucide-react";
+import { ChevronLeft, PackagePlus } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -109,6 +109,23 @@ export default function HorizonDetails({
           </div>
         </div>
         <div className="flex flex-wrap gap-5">
+          <div className="border p-4 w-40 rounded-lg relative group hover:text-primary transform transition-all duration-200 translate-x-0 bg-secondary hover:bg-secondary/90 focus-within:ring-2 ring-ring">
+            <div className="w-full h-32 relative">
+              <div
+                className="focus:ring-0 focus:outline-none w-full h-full cursor-pointer"
+                onClick={() => {}}
+              >
+                <div className="bg-foreground/75 hover:scale-95 ease-in-out duration-300 w-full h-full aspect-square rounded-tl-[2rem] md:rounded-tl-[3rem] rounded-md flex items-center justify-center shrink-0">
+                  <PackagePlus className="w-12 h-12 text-secondary"/>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center text-sm mt-2 gap-2 justify-between">
+              <h2 className="font-sans font-normal text-md break-all truncate">
+                Модель үүсгэх+
+              </h2>
+            </div>
+          </div>
           {horizonData?.models.map((model, index) => (
             <CardComponent
               key={model.id}

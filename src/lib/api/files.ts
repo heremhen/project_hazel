@@ -10,15 +10,27 @@ import {
 } from "./baseInstance";
 
 async function getFile(dir: string) {
-  return await callGet(`/r/cdn/${dir}`);
+  const response = await callGet(`/r/cdn/${dir}`);
+  return {
+    status: response.status,
+    data: response.data.result,
+  };
 }
 
 async function getOwnFiles() {
-  return await callGet(`/r/my/files`);
+  const response = await callGet(`/r/my/files`);
+  return {
+    status: response.status,
+    data: response.data.result,
+  };
 }
 
 async function storeUploadFiles(data: FormData) {
-  return await callPostByFormData("/r/upload", data);
+  const response = await callPostByFormData("/r/upload", data);
+  return {
+    status: response.status,
+    data: response.data.result,
+  };
 }
 
 export { getFile, getOwnFiles, storeUploadFiles };

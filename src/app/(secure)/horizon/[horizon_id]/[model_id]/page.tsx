@@ -3,5 +3,5 @@ export default function ModelDetails({
 }: {
   params: { horizon_id: number; model_id: number };
 }) {
-  return <></>;
+  return <>{params.model_id}</>;
 }
