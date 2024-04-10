@@ -1,8 +1,5 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { File as FileIcon, FileUp, Trash } from "lucide-react";
 import Image from "next/image";
@@ -20,17 +17,10 @@ type FileState = {
   };
 };
 
-const FormSchema = z.object({
-  dataset: z.any().refine((file) => file, "File must be provided."),
-});
-
 export default function RegistryUpload() {
   const [files, setFiles] = useState<FileState>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [dragging, setDragging] = useState(false);
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-  });
   const router = useRouter();
 
   const fileUpload = async () => {
@@ -41,6 +31,16 @@ export default function RegistryUpload() {
         formData.append("upload_files", file);
       }
     });
+
+    if (!formData.has("upload_files")) {
+      toast({
+        variant: "destructive",
+        title: "Алдаа!",
+        description: "No files to upload",
+      });
+      setIsLoading(false);
+      return;
+    }
 
     await storeUploadFiles(formData)
       .then((response) => {
@@ -134,7 +134,7 @@ export default function RegistryUpload() {
   };
 
   return (
-    <div className="w-screen sm:px-8 md:px-16 sm:py-8">
+    <div className="w-full sm:px-8 md:px-16 sm:py-8">
       <main className="container mx-auto max-w-screen-lg h-full">
         <article
           className="relative h-full flex flex-col bg-muted/40 shadow-xl rounded-lg border"
@@ -189,16 +189,16 @@ export default function RegistryUpload() {
                         src={objectURL}
                       />
                       <section className="flex flex-col rounded-md text-xs break-words w-full h-full z-20 absolute top-0 py-2 px-3">
-                        <h1 className="flex-1 group-hover:text-blue-800">
+                        <h1 className="flex-1 group-hover:text-secondary">
                           {name}
                         </h1>
                         <div className="flex">
-                          <span className="p-1 text-blue-800">
+                          <span className="p-1 text-secondary">
                             <i>
                               <FileIcon className="w-4 h-4" />
                             </i>
                           </span>
-                          <p className="p-1 size text-xs text-primary/70">
+                          <p className="p-1 size text-xs text-secondary/70">
                             {size}
                           </p>
                           <Button
@@ -232,7 +232,10 @@ export default function RegistryUpload() {
               id="cancel"
               variant={"ghost"}
               className="ml-3 px-3 py-1"
-              onClick={handleCancel}
+              onClick={() => {
+                handleCancel();
+                router.back();
+              }}
             >
               Цуцлах
             </Button>

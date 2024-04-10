@@ -8,7 +8,8 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
 import Link from "next/link";
-import { Skeleton } from "@/components/ui/skeleton";
+import Lottie from "lottie-react";
+import animationData from "@/../public/lottie/loading.json";
 
 interface HorizonProps {
   icon: string;
@@ -76,11 +77,13 @@ export default function Horizon() {
 
   if (!isFetchingComplete) {
     return (
-      <div className="flex flex-col space-y-3">
-        <Skeleton className="h-[125px] w-[250px] rounded-xl" />
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-[250px]" />
-          <Skeleton className="h-4 w-[200px]" />
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-10/12 sm:w-1/2 lg:w-1/4">
+          <Lottie
+            animationData={animationData}
+            className="flex justify-center items-center"
+            loop={true}
+          />
         </div>
       </div>
     );
@@ -156,5 +159,5 @@ export default function Horizon() {
 }
 
 const SkeletonHeader = () => (
-  <div className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl   dark:bg-dot-white/[0.2] bg-dot-black/[0.2] [mask-image:radial-gradient(ellipse_at_center,white,transparent)]  border border-transparent dark:border-white/[0.2] bg-neutral-100 dark:bg-black"></div>
+  <div className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl   dark:bg-dot-white/[0.2] bg-dot-black/[0.2] [mask-image:radial-gradient(ellipse_at_center,white,transparent)]  border border-foreground dark:border-white/[0.2] bg-neutral-100 dark:bg-black"></div>
 );

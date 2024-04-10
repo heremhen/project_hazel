@@ -15,7 +15,7 @@ async function getAllModels(): Promise<IResponse> {
   };
 }
 
-async function getModel(id: string): Promise<IResponse> {
+async function getModel(id: number): Promise<IResponse> {
   const resp = await callGet(`/models/${id}`);
   return {
     status: resp.status,
