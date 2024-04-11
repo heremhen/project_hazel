@@ -204,7 +204,7 @@ export default function HorizonDetails({
             }}
           >
             <ChevronLeft className="h-4 w-4" />
-            <span className="sr-only">Back</span>
+            <span className="sr-only">Буцах</span>
           </Button>
           <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
             {horizonData?.name}
@@ -213,7 +213,11 @@ export default function HorizonDetails({
             {horizonData?.shared ? "Нээлттэй" : "Хаалттай"}
           </Badge>
           <div className="hidden items-center gap-2 md:ml-auto md:flex">
-            <Button variant="outline" size="sm">
+            <Button
+              variant="outline"
+              size="sm"
+              className="hover:bg-destructive"
+            >
               Устгах
             </Button>
             <Button size="sm">Хуваалцах</Button>
@@ -420,10 +424,10 @@ export default function HorizonDetails({
           ))}
         </div>
         <div className="flex items-center justify-center gap-2 md:hidden">
-          <Button variant="outline" size="sm">
-            Discard
+          <Button variant="outline" size="sm" className="hover:bg-destructive">
+            Устгах
           </Button>
-          <Button size="sm">Save Product</Button>
+          <Button size="sm">Хуваалцах</Button>
         </div>
       </div>
     </main>

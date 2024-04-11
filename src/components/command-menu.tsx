@@ -71,10 +71,10 @@ export function CommandDialogMenu({ ...props }: DialogProps) {
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput placeholder="Хайх зүйлээ бичих..." />
-        <CommandList>
+        <CommandList className="pointer-events-auto">
           <CommandEmpty>Хайлт илэрцгүй.</CommandEmpty>
           <CommandGroup heading="Ерөнхий">
-            <CommandItem className="z-50">
+            <CommandItem>
               <DashboardIcon className="mr-2 h-4 w-4" />
               <span>Add Card to Horizon</span>
             </CommandItem>

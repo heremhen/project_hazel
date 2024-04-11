@@ -1,28 +1,10 @@
 "use client";
 
-import { ChevronLeft, LucideLoader2, RefreshCcw } from "lucide-react";
+import { ChevronLeft, RefreshCcw } from "lucide-react";
 
+import { FormSchema } from "@/lib/formSchema";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { getModel } from "@/lib/api/models";
 import { toast } from "@/components/ui/use-toast";
 import { useEffect, useState } from "react";
@@ -37,8 +19,10 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { prediction } from "@/lib/api/predict";
+import { getAllPrediction, prediction } from "@/lib/api/predict";
+import { Outputs } from "@/components/predict-output";
+import PredictionDetails from "@/components/predict-output-details";
+import { PredictionInputs } from "@/components/prediction-inputs";
 
 interface PredictionInputField {
   most_frequent_value: string;
@@ -76,7 +60,7 @@ interface FieldData {
   data_type: string;
 }
 
-let FormSchema = z.object({});
+let MutableFormSchema = FormSchema;
 
 export default function Prediction({
   params,
@@ -87,14 +71,17 @@ export default function Prediction({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isFetchingComplete, setFetchingComplete] = useState<boolean>(false);
   const router = useRouter();
-  const [output, setOutput] = useState("");
+  const [output, setOutput] = useState([]);
+  const [selectedOutput, setSelectedOutput] = useState<number | null>(null);
 
   const updateFormSchema = (fieldData: FieldData[]) => {
-    FormSchema = z.object({});
+    MutableFormSchema = z.object({});
 
     fieldData.forEach((field) => {
       const fieldSchema = z.union([z.string(), z.number()]);
-      FormSchema = FormSchema.extend({ [field.name]: fieldSchema });
+      MutableFormSchema = MutableFormSchema.extend({
+        [field.name]: fieldSchema,
+      });
     });
   };
 
@@ -125,14 +112,17 @@ export default function Prediction({
       });
   };
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<z.infer<typeof MutableFormSchema>>({
+    resolver: zodResolver(MutableFormSchema),
   });
 
-  async function makePrediction(Data: z.infer<typeof FormSchema>) {
+  async function makePrediction(Data: z.infer<typeof MutableFormSchema>) {
+    const isValid = await form.trigger();
+    if (!isValid) {
+      return;
+    }
     setIsLoading(true);
 
-    let data;
     try {
       const response = await prediction(
         params.horizon_id,
@@ -140,9 +130,9 @@ export default function Prediction({
         "json",
         { data: [Data] }
       );
-      data = response.data.results;
-      if (data && data.length > 0) {
-        const result = data[0].output;
+      const { result } = response.data;
+      if (result && result.length > 0) {
+        // const result = data[0].output;
         setOutput(result);
       }
       toast({
@@ -158,8 +148,23 @@ export default function Prediction({
       setIsLoading(false);
     }
   }
+
+  const getPredOutput = async () => {
+    await getAllPrediction()
+      .then((response) => {
+        setOutput(response.data);
+      })
+      .catch((err) => {
+        toast({
+          variant: "destructive",
+          title: "Уучлаарай, доголдол үүслээ!",
+        });
+      });
+  };
+
   const fetchData = async () => {
     await getModelData();
+    await getPredOutput();
     setFetchingComplete(true);
   };
 
@@ -188,6 +193,7 @@ export default function Prediction({
           <Button
             variant="outline"
             size="icon"
+            disabled={isLoading}
             className="h-7 w-7"
             onClick={() => {
               router.push(`/horizon/${params.horizon_id}/${params.model_id}`);
@@ -215,6 +221,7 @@ export default function Prediction({
             <Button
               variant="outline"
               size="sm"
+              disabled={isLoading}
               onClick={() => {
                 fetchData();
               }}
@@ -228,123 +235,37 @@ export default function Prediction({
           className="rounded-lg border"
         >
           <ResizablePanel defaultSize={50}>
-            <ScrollArea className="flex h-[80vh] items-center justify-center bg-background/95 shadow-lg border border-border rounded-md">
-              <ul className="p-6">
-                <Form {...form}>
-                  <form
-                    onSubmit={form.handleSubmit(makePrediction)}
-                    className="w-auto space-y-2"
-                  >
-                    {modelData &&
-                      Object.entries(modelData.prediction_input_fields).map(
-                        ([fieldName, fieldInfo]) => (
-                          <li key={fieldName} className="w-full">
-                            {fieldInfo.data_type === "object" ? (
-                              <FormField
-                                control={form.control}
-                                name={fieldName as never}
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>{fieldName}</FormLabel>
-                                    <FormControl>
-                                      <Select
-                                        disabled={isLoading}
-                                        onValueChange={field.onChange}
-                                        defaultValue={field.value}
-                                      >
-                                        <SelectTrigger>
-                                          <SelectValue
-                                            placeholder={`Утга сонгоно уу. (Ж: ${
-                                              modelData &&
-                                              modelData.prediction_input_fields[
-                                                fieldName
-                                              ].most_frequent_value
-                                            })`}
-                                          />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          <SelectGroup>
-                                            {fieldInfo.fields?.map((option) => (
-                                              <SelectItem
-                                                key={option}
-                                                value={option}
-                                              >
-                                                {option}
-                                              </SelectItem>
-                                            ))}
-                                          </SelectGroup>
-                                        </SelectContent>
-                                      </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            ) : (
-                              <FormField
-                                control={form.control}
-                                name={fieldName as never}
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>{fieldName}</FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        disabled={isLoading}
-                                        type="number"
-                                        placeholder={
-                                          modelData &&
-                                          modelData.prediction_input_fields[
-                                            fieldName
-                                          ].most_frequent_value
-                                        }
-                                        {...field}
-                                        value={field.value || ""}
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            )}
-                          </li>
-                        )
-                      )}
-                    <div className="pt-5">
-                      <Button
-                        className="w-full"
-                        type="submit"
-                        disabled={isLoading}
-                      >
-                        {isLoading && (
-                          <LucideLoader2 className="mr-2 h-4 w-4 animate-spin" />
-                        )}
-                        Таамаглах
-                      </Button>
-                      {output && (
-                        <>
-                          <pre className="flex justify-between w-full mt-2 rounded-md bg-slate-950 p-4">
-                            <span>Үр дүн:</span> <p>{output}</p>
-                          </pre>
-                        </>
-                      )}
-                    </div>
-                  </form>
-                </Form>
-              </ul>
-            </ScrollArea>
+            {modelData && (
+              <PredictionInputs
+                modelData={modelData}
+                form={form}
+                isLoading={isLoading}
+                makePrediction={makePrediction}
+              />
+            )}
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={50}>
             <ResizablePanelGroup direction="vertical">
               <ResizablePanel defaultSize={25}>
-                <div className="flex h-full items-center justify-center p-6">
-                  <span className="font-semibold">Two</span>
+                <div className="flex h-full items-center justify-center">
+                  <PredictionDetails
+                    items={
+                      selectedOutput !== null
+                        ? [output[output.length - selectedOutput]]
+                        : []
+                    }
+                  />
                 </div>
               </ResizablePanel>
               <ResizableHandle withHandle />
               <ResizablePanel defaultSize={75}>
-                <div className="flex h-full items-center justify-center p-6">
-                  <span className="font-semibold">Three</span>
+                <div className="flex h-full items-center justify-center">
+                  <Outputs
+                    items={output}
+                    selected={selectedOutput}
+                    onSelect={setSelectedOutput}
+                  />
                 </div>
               </ResizablePanel>
             </ResizablePanelGroup>
