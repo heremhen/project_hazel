@@ -60,14 +60,13 @@ export default function PredictionDetails({ items }: OutputsProps) {
                 </div>
                 {item.results.map((result, index) => (
                   <div key={index} className="w-full">
-                    <pre className="flex justify-between w-full mt-2 rounded-md bg-slate-900 text-white p-4">
+                    <pre className="flex justify-between w-full mt-2 rounded-md bg-slate-900 p-4">
                       <ul className="w-full">
                         <div className="flex w-full justify-between">
-                          <span>Оролт: </span>
+                          <span className="text-white">Оролт: </span>
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Button
-                                className=""
                                 variant={"outline"}
                                 onClick={() => {
                                   navigator.clipboard.writeText(
@@ -89,7 +88,9 @@ export default function PredictionDetails({ items }: OutputsProps) {
                             </TooltipContent>
                           </Tooltip>
                         </div>
-                        <p>{JSON.stringify(result.inputs, null, 2)}</p>
+                        <p className="text-white">
+                          {JSON.stringify(result.inputs, null, 2)}
+                        </p>
                       </ul>
                     </pre>
                     <pre className="flex justify-between w-full mt-2 rounded-md bg-primary/95 text-secondary p-4 pr-10">
