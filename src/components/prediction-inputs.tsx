@@ -2,7 +2,7 @@
 
 import { BrainCog, LucideLoader2 } from "lucide-react";
 
-import { FormSchema } from "@/lib/formSchema";
+import { FormSchema } from "@/lib/dto/formSchema";
 import { Button } from "@/components/ui/button";
 import {
   Form,

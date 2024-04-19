@@ -56,7 +56,7 @@ export function LoginForm() {
           const { data } = response;
           setToken("token", data.refresh);
           toast({
-            description: "Welcome back 🤗",
+            description: "Тавтай морил 🤗",
           });
           setIsLoading(false);
           router.refresh()
@@ -67,8 +67,8 @@ export function LoginForm() {
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Unauthorized",
-        description: `Provided credentials didn't match!`,
+        title: "Оролдлого амжилтгүй",
+        description: `Утгуудын мэдээлэл таарсангүй!`,
         action: <ToastAction altText="Try again">Try again</ToastAction>,
       });
       setIsLoading(false);

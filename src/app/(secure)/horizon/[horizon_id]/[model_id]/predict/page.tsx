@@ -2,7 +2,7 @@
 
 import { ChevronLeft, RefreshCcw } from "lucide-react";
 
-import { FormSchema } from "@/lib/formSchema";
+import { FormSchema } from "@/lib/dto/formSchema";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getModel } from "@/lib/api/models";

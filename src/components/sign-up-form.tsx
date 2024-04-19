@@ -70,7 +70,7 @@ export function SignUpForm() {
       }).then((response) => {
         if (response.status === 201) {
           toast({
-            description: "Successfully created an account. Please wait...",
+            description: "Бүртгэл амжилттай!",
           });
           setIsLoading(false);
           router.push("/");
@@ -81,10 +81,10 @@ export function SignUpForm() {
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Failed to create an account 🥺",
+        title: "Алдаа... 🥺",
         description:
-          "It's either user with the following username, email exist or password didn't meet the requirements!",
-        action: <ToastAction altText="Try again">Try again</ToastAction>,
+          "Хэрэглэгчийн нэр болон цахим хаяг өмнө нь бүртгэгдсэн байна!",
+        action: <ToastAction altText="Try again">Дахин оролдох</ToastAction>,
       });
       setIsLoading(false);
     }
