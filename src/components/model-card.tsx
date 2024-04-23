@@ -38,7 +38,7 @@ interface CardData {
   card_bg: string;
   title: string;
   type: string;
-  parent_id: number
+  parent_id: string;
 }
 
 interface CardProps {
@@ -49,7 +49,13 @@ const Gradient = styled.div<CardProps>`
   ${(props: { $additionals: any }) => props.$additionals}
 `;
 
-export default function CardComponent({ id, card_bg, title, type, parent_id }: CardData) {
+export default function CardComponent({
+  id,
+  card_bg,
+  title,
+  type,
+  parent_id,
+}: CardData) {
   const { toast } = useToast();
   const router = useRouter();
   const [isDeleted, setIsDeleted] = useState<boolean>(false);
@@ -113,10 +119,10 @@ export default function CardComponent({ id, card_bg, title, type, parent_id }: C
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DialogTrigger asChild>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
+                      <DropdownMenuItem>Засах</DropdownMenuItem>
                     </DialogTrigger>
                     <AlertDialogTrigger className="text-red-600 w-full">
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
+                      <DropdownMenuItem>Устгах</DropdownMenuItem>
                     </AlertDialogTrigger>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -131,48 +137,48 @@ export default function CardComponent({ id, card_bg, title, type, parent_id }: C
         </div>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Edit model details</DialogTitle>
+            <DialogTitle>Мэдээлэл засах</DialogTitle>
             <DialogDescription>
-              Make changes to your model here. Click save when you{"'"}re done.
+              Өөрчлөлт оруулсны дараа `Хадгалах` товчин дээр дарна уу.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="name" className="text-right">
-                Name
+                Нэршил
               </Label>
               <Input id="name" defaultValue={title} className="col-span-3" />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="description" className="text-right">
-                Description
+                Тайлбар
               </Label>
               <Textarea
                 id="description"
                 className="col-span-3"
-                placeholder="Type your description here."
+                placeholder="Энд тайлбар бичнэ үү."
               />
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Save changes</Button>
+            <Button type="submit">Хадгалах</Button>
           </DialogFooter>
         </DialogContent>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle>Та бүрэн итгэлтэй байна уу?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your
-              model pipeline and remove data from our servers.
+              Энэхүү үйлдлийг буцаах боломжгүй бөгөөд таны моделийг манай
+              серверээс бүрмөсөн устгах болно.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Болих</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive/90 hover:bg-destructive text-destructive-foreground"
               // onClick={deleteModel}
             >
-              Continue
+              Үргэлжлүүлэх
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

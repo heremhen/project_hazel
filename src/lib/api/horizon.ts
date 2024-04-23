@@ -9,7 +9,7 @@ import {
   callDelete,
 } from "./baseInstance";
 
-async function getHorizon(id: number) {
+async function getHorizon(id: string) {
   const response = await callGet(`/horizon/${id}`);
   return {
     status: response.status,

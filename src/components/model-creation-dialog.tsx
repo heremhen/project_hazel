@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -33,31 +33,95 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Controller, UseFormReturn } from "react-hook-form";
+import { Controller } from "react-hook-form";
 import { z } from "zod";
 import Link from "next/link";
 import { modelCreationSchema } from "@/lib/dto/modelCreationSchema";
 import { RegistryProp } from "@/lib/dto/registryProp";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createAutoMLModel } from "@/lib/api/models";
+import { getOwnFiles } from "@/lib/api/files";
+import { toast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
+import { Slider } from "@/components/ui/slider";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ModelCreationDialogProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   isLoading: boolean;
-  createModel: (data: z.infer<typeof modelCreationSchema>) => Promise<void>;
-  modelCreationSchema: z.ZodType<any, any>;
-  form: UseFormReturn<z.infer<typeof modelCreationSchema>>;
-  registryData: RegistryProp[] | undefined;
+  setIsLoading: (isLoading: boolean) => void;
+  horizonId: string;
 }
 
 export default function ModelCreationDialog({
   isOpen,
   setIsOpen,
   isLoading,
-  createModel,
-  modelCreationSchema,
-  form,
-  registryData,
+  setIsLoading,
+  horizonId,
 }: ModelCreationDialogProps) {
+  const [registryData, setRegistryData] = useState<RegistryProp[]>([]);
+  const router = useRouter();
+
+  const form = useForm<z.infer<typeof modelCreationSchema>>({
+    resolver: zodResolver(modelCreationSchema),
+    defaultValues: {
+      horizon_id: parseInt(horizonId),
+    },
+  });
+
+  const createModel = async (data: z.infer<typeof modelCreationSchema>) => {
+    setIsLoading(true);
+    try {
+      const response = await createAutoMLModel(data);
+      if (response.status === 201) {
+        const { id } = response.data;
+        toast({
+          title: "Амжилттай!",
+        });
+        router.push(`/horizon/${horizonId}/${id}`);
+      }
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Модель үүсгэхэд алдаа гарлаа!",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getRegistryData = async () => {
+    try {
+      const response = await getOwnFiles();
+      if (response.status === 200) {
+        setRegistryData(response.data);
+      }
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Уучлаарай, доголдол үүслээ!",
+      });
+    }
+  };
+
+  useEffect(() => {
+    getRegistryData();
+  }, []);
+
+  const onSubmit = form.handleSubmit(
+    (data) => {
+      console.log("Form data:", data);
+      createModel(data);
+    },
+    (errors) => {
+      console.log("Form errors:", errors);
+    }
+  );
+
   return (
     <Dialog>
       <div className="border p-4 w-40 rounded-lg relative group hover:text-primary transform transition-all duration-200 translate-x-0 bg-secondary hover:bg-secondary/90 focus-within:ring-2 ring-ring">
@@ -102,128 +166,263 @@ export default function ModelCreationDialog({
             </CollapsibleTrigger>
           </div>
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(
-                (data) => {
-                  console.log("Form data:", data);
-                  createModel(data);
-                },
-                (errors) => {
-                  console.log("Form errors:", errors);
-                }
-              )}
-              className="grid gap-4"
-            >
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <div className="grid gap-2">
-                        <Label htmlFor="name">Моделийн нэр</Label>
-                        <Input
-                          type="text"
-                          placeholder="CH4NGE ME"
-                          {...field}
-                          value={field.value || ""}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="target_attribute"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <div className="grid gap-2">
-                        <Label htmlFor="target_attribute">
-                          Зорилтот аттрибут
-                          <span className="text-destructive">*</span> {"("}
-                          багана{")"}
-                        </Label>
-                        <Input
-                          type="text"
-                          placeholder="price"
-                          {...field}
-                          value={field.value || ""}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="registry_id"
-                render={({ field }) => (
-                  <Controller
+            <form onSubmit={onSubmit} className="grid gap-4">
+              <ScrollArea className={`w-full ${isOpen ? "h-96" : "h-60"}`}>
+                <div className="grid gap-4 p-3">
+                  <FormField
                     control={form.control}
-                    name="registry_id"
+                    name="name"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
                           <div className="grid gap-2">
-                            <div className="flex items-center">
-                              <Label htmlFor="registry_id">
-                                Өгөгдөл
-                                <span className="text-destructive">*</span>{" "}
-                                {"("}.csv{")"}
-                              </Label>
-                              <Link
-                                href="/files/upload"
-                                className="ml-auto inline-block text-sm underline"
-                              >
-                                Өгөгдөл байршуулах?
-                              </Link>
-                            </div>
-                            <Select
-                              value={field.value ? field.value.toString() : ""}
-                              onValueChange={(value) =>
-                                field.onChange(Number(value))
-                              }
-                            >
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Өгөгдөл сонгоно уу" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectGroup>
-                                  <SelectLabel>Өгөгдөл</SelectLabel>
-                                  {registryData?.map((item) => (
-                                    <SelectItem
-                                      key={item.id}
-                                      value={item.id.toString()}
-                                    >
-                                      {item.id}. {item.filename}
-                                      {" ("}
-                                      {item.extension}
-                                      {") "}
-                                    </SelectItem>
-                                  ))}
-                                </SelectGroup>
-                              </SelectContent>
-                            </Select>
+                            <Label htmlFor="name">Моделийн нэр</Label>
+                            <Input
+                              type="text"
+                              placeholder="CH4NGE ME"
+                              {...field}
+                              value={field.value || ""}
+                            />
                           </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                )}
-              />
-              <CollapsibleContent className="space-y-2">
-                <div className="rounded-md border px-4 py-3 font-mono text-sm">
-                  @radix-ui/colors
+                  <FormField
+                    control={form.control}
+                    name="target_attribute"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <div className="grid gap-2">
+                            <Label htmlFor="target_attribute">
+                              Зорилтот аттрибут
+                              <span className="text-destructive">*</span> {"("}
+                              багана{")"}
+                            </Label>
+                            <Input
+                              type="text"
+                              placeholder="price"
+                              {...field}
+                              value={field.value || ""}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="registry_id"
+                    render={({ field }) => (
+                      <Controller
+                        control={form.control}
+                        name="registry_id"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <div className="grid gap-2">
+                                <div className="flex items-center">
+                                  <Label htmlFor="registry_id">
+                                    Өгөгдөл
+                                    <span className="text-destructive">
+                                      *
+                                    </span>{" "}
+                                    {"("}.csv{")"}
+                                  </Label>
+                                  <Link
+                                    href="/files/upload"
+                                    className="ml-auto inline-block text-sm underline"
+                                  >
+                                    Өгөгдөл байршуулах?
+                                  </Link>
+                                </div>
+                                <Select
+                                  value={
+                                    field.value ? field.value.toString() : ""
+                                  }
+                                  onValueChange={(value) =>
+                                    field.onChange(Number(value))
+                                  }
+                                >
+                                  <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Өгөгдөл сонгоно уу" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectGroup>
+                                      <SelectLabel>Өгөгдөл</SelectLabel>
+                                      {registryData?.map((item) => (
+                                        <SelectItem
+                                          key={item.id}
+                                          value={item.id.toString()}
+                                        >
+                                          {item.id}. {item.filename}
+                                          {" ("}
+                                          {item.extension}
+                                          {") "}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectGroup>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
+                  />
+                  <CollapsibleContent className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="pipeline_type"
+                      render={({ field }) => (
+                        <Controller
+                          control={form.control}
+                          name="pipeline_type"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <div className="grid gap-2">
+                                  <div className="flex items-center">
+                                    <Label htmlFor="pipeline_type">
+                                      Хөгжүүлэлтийн төрөл
+                                    </Label>
+                                  </div>
+                                  <Select
+                                    value={
+                                      field.value
+                                        ? field.value.toString()
+                                        : "auto"
+                                    }
+                                    onValueChange={(value) =>
+                                      field.onChange(value)
+                                    }
+                                  >
+                                    <SelectTrigger className="w-full">
+                                      <SelectValue placeholder="Автомат" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectGroup>
+                                        <SelectItem key={1} value="auto">
+                                          Автомат
+                                        </SelectItem>
+                                        <SelectItem
+                                          key={2}
+                                          value="classification"
+                                        >
+                                          Ангилал
+                                        </SelectItem>
+                                        <SelectItem key={3} value="regression">
+                                          Регресс
+                                        </SelectItem>
+                                      </SelectGroup>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="time_budget"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <div className="grid gap-2">
+                              <Label htmlFor="time_budget">
+                                Хугацааны төсөв
+                              </Label>
+                              <Select
+                                value={
+                                  field.value ? field.value.toString() : "181"
+                                }
+                                onValueChange={(value) =>
+                                  field.onChange(Number(value))
+                                }
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Автомат" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectGroup>
+                                    <SelectItem key={1} value="61">
+                                      Хурдан
+                                    </SelectItem>
+                                    <SelectItem key={2} value="181">
+                                      Ердийн
+                                    </SelectItem>
+                                    <SelectItem key={3} value="602">
+                                      Нарийвчлалтай
+                                    </SelectItem>
+                                  </SelectGroup>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="test_size_threshold"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <div className="grid gap-2 py-2">
+                              <Label htmlFor="test_size_threshold">
+                                Туршилтын босго{" "}
+                                {field.value ? field.value * 100 : 20}%
+                              </Label>
+                              <Slider
+                                defaultValue={
+                                  field.value ? [field.value * 100] : [20]
+                                }
+                                max={90}
+                                min={10}
+                                step={1}
+                                onValueChange={(value) =>
+                                  field.onChange(
+                                    Number((value[0] * 0.01).toFixed(2))
+                                  )
+                                }
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <div className="grid gap-2">
+                              <Label htmlFor="description">Тайлбар</Label>
+                              <Textarea
+                                placeholder="Энд тайлбар бичнэ үү."
+                                className="resize-none"
+                                {...field}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CollapsibleContent>
                 </div>
-                <div className="rounded-md border px-4 py-3 font-mono text-sm">
-                  @stitches/react
-                </div>
-              </CollapsibleContent>
+              </ScrollArea>
               <DialogFooter>
                 <Button type="submit" disabled={isLoading} className="w-full">
                   {isLoading && (

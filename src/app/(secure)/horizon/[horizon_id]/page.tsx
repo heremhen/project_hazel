@@ -8,16 +8,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 import CardComponent from "@/components/model-card";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { createAutoMLModel } from "@/lib/api/models";
-import { getOwnFiles } from "@/lib/api/files";
+import ModelCreationDialog from "@/components/model-creation-dialog";
 import Lottie from "lottie-react";
 import animationData from "@/../public/lottie/loading.json";
-import ModelCreationDialog from "@/components/model-creation-dialog";
-import { modelCreationSchema } from "@/lib/dto/modelCreationSchema";
-import { RegistryProp } from "@/lib/dto/registryProp";
 
 interface ModelsEssentials {
   id: number;
@@ -43,40 +36,13 @@ interface HorizonProp {
 export default function HorizonDetails({
   params,
 }: {
-  params: { horizon_id: number };
+  params: { horizon_id: string };
 }) {
-  const [horizonData, setHorizonData] = useState<HorizonProp>();
+  const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [horizonData, setHorizonData] = useState<HorizonProp>();
   const [isFetchingComplete, setFetchingComplete] = useState<boolean>(false);
   const router = useRouter();
-  const [isOpen, setIsOpen] = useState(false);
-  const [registryData, setRegistryData] = useState<RegistryProp[]>();
-
-  const form = useForm<z.infer<typeof modelCreationSchema>>({
-    resolver: zodResolver(modelCreationSchema),
-    defaultValues: {
-      horizon_id: params.horizon_id,
-    },
-  });
-
-  const createModel = async (data: z.infer<typeof modelCreationSchema>) => {
-    await createAutoMLModel(data)
-      .then((response) => {
-        if (response.status === 201) {
-          const { id } = response.data;
-          toast({
-            title: "Амжилттай!",
-          });
-          router.push(`/horizon/${params.horizon_id}/${id}`);
-        }
-      })
-      .catch((err) => {
-        toast({
-          variant: "destructive",
-          title: "Модель үүсгэхэд алдаа гарлаа!",
-        });
-      });
-  };
 
   const getHorizonData = async () => {
     await getHorizon(params.horizon_id)
@@ -94,33 +60,9 @@ export default function HorizonDetails({
       });
   };
 
-  const getRegistryData = async () => {
-    await getOwnFiles()
-      .then((response) => {
-        if (response.status === 200) {
-          const sortedRegistryData = response.data.sort(
-            (a: { id: number }, b: { id: number }) => b.id - a.id
-          );
-          setRegistryData(sortedRegistryData);
-        }
-      })
-      .catch((err) => {
-        // console.log(err);
-        toast({
-          variant: "destructive",
-          title: "Уучлаарай, доголдол үүслээ!",
-        });
-      });
-  };
-
   useEffect(() => {
-    const fetchData = async () => {
-      await getHorizonData();
-      await getRegistryData();
-      setFetchingComplete(true);
-    };
-
-    fetchData();
+    getHorizonData();
+    setFetchingComplete(true);
   }, []);
 
   if (!isFetchingComplete) {
@@ -174,10 +116,8 @@ export default function HorizonDetails({
             isOpen={isOpen}
             setIsOpen={setIsOpen}
             isLoading={isLoading}
-            createModel={createModel}
-            modelCreationSchema={modelCreationSchema}
-            form={form}
-            registryData={registryData || []}
+            setIsLoading={setIsLoading}
+            horizonId={params.horizon_id}
           />
           {horizonData?.models.map((model, index) => (
             <CardComponent

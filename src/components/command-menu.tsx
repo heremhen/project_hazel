@@ -27,6 +27,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { DialogProps } from "@radix-ui/react-alert-dialog";
+import { logout } from "@/lib/cookie_helper";
 
 export function CommandDialogMenu({ ...props }: DialogProps) {
   const router = useRouter();
@@ -114,10 +115,10 @@ export function CommandDialogMenu({ ...props }: DialogProps) {
             </CommandItem>
             <CommandItem
               className="text-red-500"
-              // onSelect={async () => {
-              //   await fetch.post("/api/account/logout");
-              //   router.push("/account/login");
-              // }}
+              onClick={() => {
+                logout();
+                router.refresh();
+              }}
             >
               <ExitIcon className="mr-2 h-4 w-4" />
               <span>Системээс гарах</span>
