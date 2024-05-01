@@ -8,6 +8,16 @@ interface DecodedTokenDto {
   sub?: string;
 }
 
+async function getBackendURL() {
+  const url = process.env.BACKEND_URL;
+
+  if (!url) {
+    throw new Error("Backend link is not set");
+  }
+
+  return url;
+}
+
 const setToken = async (name: string, token: string): Promise<void> => {
   const data = await getDecodedAccessToken(token);
 
@@ -107,4 +117,5 @@ export {
   checkTokenIsExpired,
   getDecodedAccessToken,
   logout,
+  getBackendURL,
 };

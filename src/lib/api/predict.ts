@@ -23,8 +23,8 @@ async function prediction(
   };
 }
 
-async function getAllPrediction(): Promise<IResponse> {
-  const resp = await callGet(`predict?limit=10`);
+async function getAllPrediction(model_id: string): Promise<IResponse> {
+  const resp = await callGet(`predict?models_id=${model_id}&limit=20`);
   return {
     status: resp.status,
     data: resp.data.result,

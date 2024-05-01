@@ -150,7 +150,7 @@ export default function Prediction({
   }
 
   const getPredOutput = async () => {
-    await getAllPrediction()
+    await getAllPrediction(`${params.model_id}`)
       .then((response) => {
         setOutput(response.data);
       })

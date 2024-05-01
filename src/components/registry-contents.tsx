@@ -75,9 +75,9 @@ export function RegistryContents() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
+                      <DropdownMenuLabel>Үйлдлүүд</DropdownMenuLabel>
+                      <DropdownMenuItem>Засах</DropdownMenuItem>
+                      <DropdownMenuItem>Устгах</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -104,9 +104,9 @@ export function RegistryContents() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
+                      <DropdownMenuLabel>Үйлдлүүд</DropdownMenuLabel>
+                      <DropdownMenuItem>Засах</DropdownMenuItem>
+                      <DropdownMenuItem>Устгах</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -133,9 +133,9 @@ export function RegistryContents() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
+                      <DropdownMenuLabel>Үйлдлүүд</DropdownMenuLabel>
+                      <DropdownMenuItem>Засах</DropdownMenuItem>
+                      <DropdownMenuItem>Устгах</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -162,9 +162,9 @@ export function RegistryContents() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
+                      <DropdownMenuLabel>Үйлдлүүд</DropdownMenuLabel>
+                      <DropdownMenuItem>Засах</DropdownMenuItem>
+                      <DropdownMenuItem>Устгах</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -191,9 +191,9 @@ export function RegistryContents() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
+                      <DropdownMenuLabel>Үйлдлүүд</DropdownMenuLabel>
+                      <DropdownMenuItem>Засах</DropdownMenuItem>
+                      <DropdownMenuItem>Устгах</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

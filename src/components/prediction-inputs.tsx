@@ -79,7 +79,7 @@ export function PredictionInputs({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(makePrediction)}
-            className="w-auto space-y-2"
+            className="w-auto space-y-3"
           >
             {modelData &&
               Object.entries(modelData.prediction_input_fields).map(
@@ -156,19 +156,13 @@ export function PredictionInputs({
               modelData.status !== "FAILED" && (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="fixed bottom-5 right-5 md:bottom-10 md:right-10 lg:bottom-10 lg:right-72 z-10">
-                      <Button
-                        className="w-full"
-                        type="submit"
-                        disabled={isLoading}
-                      >
-                        {isLoading ? (
-                          <LucideLoader2 className="mr-2 h-4 w-4 animate-spin" />
-                        ) : (
-                          <BrainCog className="w-4 h-4" />
-                        )}
-                      </Button>
-                    </div>
+                    <Button className="w-full" type="submit" disabled={isLoading}>
+                      {isLoading ? (
+                        <LucideLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <BrainCog className="w-4 h-4" />
+                      )}
+                    </Button>
                   </TooltipTrigger>
                   <TooltipContent side="top">{"Таамаглах"}</TooltipContent>
                 </Tooltip>

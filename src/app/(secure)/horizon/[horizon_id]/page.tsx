@@ -11,6 +11,8 @@ import CardComponent from "@/components/model-card";
 import ModelCreationDialog from "@/components/model-creation-dialog";
 import Lottie from "lottie-react";
 import animationData from "@/../public/lottie/loading.json";
+import bubble from "@/../public/lottie/gradient_orb.json";
+import { SkeletonCard } from "@/components/card-skeleton";
 
 interface ModelsEssentials {
   id: number;
@@ -79,6 +81,20 @@ export default function HorizonDetails({
     );
   }
 
+  if (isLoading) {
+    return (
+      <div className="absolute z-50 flex items-center justify-center min-h-screen w-full bg-background/70">
+        <div className="w-1/2 lg:w-1/3">
+          <Lottie
+            animationData={bubble}
+            className="flex justify-center items-center"
+            loop={true}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 min-h-screen">
       <div className="mx-auto grid max-w-[59rem] flex-1 auto-rows-max gap-4 w-full">
@@ -119,16 +135,26 @@ export default function HorizonDetails({
             setIsLoading={setIsLoading}
             horizonId={params.horizon_id}
           />
-          {horizonData?.models.map((model, index) => (
-            <CardComponent
-              key={model.id}
-              id={model.id}
-              card_bg={model.css_background}
-              title={model.name}
-              type={model.pipeline_type}
-              parent_id={params.horizon_id}
-            />
-          ))}
+          {isFetchingComplete ? (
+            horizonData && horizonData.models.length > 0 ? (
+              horizonData?.models.map((model, index) => (
+                <CardComponent
+                  key={model.id}
+                  id={model.id}
+                  card_bg={model.css_background}
+                  title={model.name}
+                  type={model.pipeline_type}
+                  parent_id={params.horizon_id}
+                />
+              ))
+            ) : (
+              <></>
+            )
+          ) : (
+            Array.from({ length: 4 }, (_, index) => (
+              <SkeletonCard key={index} />
+            ))
+          )}
         </div>
         <div className="flex items-center justify-center gap-2 md:hidden">
           <Button variant="outline" size="sm" className="hover:bg-destructive">
