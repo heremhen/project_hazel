@@ -9,7 +9,8 @@ interface DecodedTokenDto {
 }
 
 async function getBackendURL() {
-  const url = process.env.BACKEND_URL;
+  // const url = process.env.BACKEND_URL;
+  const url = `http://localhost:5000/`
 
   if (!url) {
     throw new Error("Backend link is not set");
