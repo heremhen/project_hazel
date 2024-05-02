@@ -9,23 +9,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
-interface Output {
-  id: number;
-  disabled: boolean;
-  created_at: string;
-  updated_at: string;
-  results: Result[];
-}
-
-interface Result {
-  inputs: Record<string, string | number>;
-  output: string;
-}
-
-interface OutputsProps {
-  items?: Output[];
-}
+import { OutputsProps } from "@/lib/dto/prediction";
 
 export default function PredictionDetails({ items }: OutputsProps) {
   const [copied, setCopied] = useState(false);

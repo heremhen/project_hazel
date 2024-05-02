@@ -23,6 +23,7 @@ import { getAllPrediction, prediction } from "@/lib/api/predict";
 import { Outputs } from "@/components/predict-output";
 import PredictionDetails from "@/components/predict-output-details";
 import { PredictionInputs } from "@/components/prediction-inputs";
+import { Output } from "@/lib/dto/prediction";
 
 interface PredictionInputField {
   most_frequent_value: string;
@@ -71,7 +72,7 @@ export default function Prediction({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isFetchingComplete, setFetchingComplete] = useState<boolean>(false);
   const router = useRouter();
-  const [output, setOutput] = useState([]);
+  const [output, setOutput] = useState<Output[]>([]);
   const [selectedOutput, setSelectedOutput] = useState<number | null>(null);
 
   const updateFormSchema = (fieldData: FieldData[]) => {
@@ -152,6 +153,7 @@ export default function Prediction({
   const getPredOutput = async () => {
     await getAllPrediction(`${params.model_id}`)
       .then((response) => {
+        console.log(response.data);
         setOutput(response.data);
       })
       .catch((err) => {
@@ -252,7 +254,7 @@ export default function Prediction({
                   <PredictionDetails
                     items={
                       selectedOutput !== null
-                        ? [output[output.length - selectedOutput]]
+                        ? output.filter((item) => item.id === selectedOutput)
                         : []
                     }
                   />
